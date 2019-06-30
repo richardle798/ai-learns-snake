@@ -24,13 +24,14 @@ public class Board extends JPanel implements ActionListener {
 	private SnakePart tail;
 	private boolean inGame;
 	private Timer timer;
+	private KeyListener keyListener;
 	
 	private int appleX;
 	private int appleY;
 	
 	public Board() {
         addKeyListener(new KeyListener());
-        setBackground(Color.black);
+        setBackground(Color.BLACK);
         setFocusable(true);
 
         setPreferredSize(new Dimension(BOARD_WIDTH*10, BOARD_LENGTH*10));
@@ -39,6 +40,7 @@ public class Board extends JPanel implements ActionListener {
 	
     private void initGame() {
         boardContents = new boolean[BOARD_WIDTH][BOARD_LENGTH];
+        keyListener = new KeyListener();
         initSnake();
         generateApple();
 
@@ -102,7 +104,6 @@ public class Board extends JPanel implements ActionListener {
             }
 
             Toolkit.getDefaultToolkit().sync();
-
         } else {
             gameOver(g);
         }        
@@ -118,9 +119,64 @@ public class Board extends JPanel implements ActionListener {
         g.setFont(small);
         g.drawString(msg, (WIDTH - metr.stringWidth(msg)) / 2, HEIGHT / 2);
     }
+    
+    private void moveSnake() {
+    	boolean onApple = (head.x == appleX && head.y == appleY) ? false : true;
+    		
+    	Key keyPressed = keyListener.keyPressed;
+    	
+    	if(keyPressed == null) {
+    		return;
+    	}
+    	
+    	SnakePart newHead = null;
+    	switch(keyPressed) {
+		case DOWN:
+			newHead = new SnakePart(head.x,head.y+1);
+			break;
+		case LEFT:
+			newHead = new SnakePart(head.x-1,head.y);
+			break;
+		case RIGHT:
+			newHead = new SnakePart(head.x+1,head.y);
+			break;
+		case UP:
+			newHead = new SnakePart(head.x,head.y-1);
+			break;
+		default:
+			break;
+    	}
+    	
+    	checkCollision(newHead);
+    	
+    	head.nextPart = newHead;
+    	head = newHead;
+    	boardContents[newHead.x][newHead.y]= true; 
+    	
+    	if(!onApple) {
+    		boardContents[tail.x][tail.y]= false; 
+    		tail = tail.nextPart;
+    		
+    	}
+    }
+    
+    private void checkCollision(SnakePart part) {
+    	if(part.x < 0 || part.x >= BOARD_WIDTH ||
+    	   part.y < 0 || part.y >= BOARD_LENGTH) {
+    		inGame = false;
+    	}
+    	
+    	if(boardContents[part.x][part.y]) {
+    		inGame = false;
+    	}
+    	
+    	if(!inGame) {
+    		timer.stop();
+    	}
+    }
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
+		moveSnake();
 	}
 }

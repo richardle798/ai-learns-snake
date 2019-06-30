@@ -11,6 +11,10 @@ public class SnakePart {
 		this.nextPart = nextPart;
 	}
 	
+	public SnakePart(int x, int y) {
+		this(x,y,null);
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof SnakePart)) {

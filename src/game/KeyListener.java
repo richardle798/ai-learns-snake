@@ -7,11 +7,8 @@ public class KeyListener extends KeyAdapter {
 	
 	public Key keyPressed;
 	
-	public enum Key {
-		UP,
-		DOWN,
-		RIGHT,
-		LEFT
+	public KeyListener() {
+		keyPressed = null;
 	}
 
     @Override
